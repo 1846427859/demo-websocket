@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>WebSocket客户端</title>
+</head>
+<body>
+    <textarea id="content" style="width:300px; height: 200px;"></textarea>
+    <br>
+    <button onclick="connectWebSocket()">连接服务器</button>
+    <button onclick="pushMessage()">服务器推送信息</button>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script>
+        var socket;
+        function connectWebSocket() {
+            if(typeof(WebSocket) == 'undefined') {
+                alert('这个浏览器不支持这个功能，请更换高版本的谷歌浏览器')
+            }
+            if(typeof(WebSocket) != 'undefined') {
+                socket = new WebSocket('http://localhost:8080/websocket/zhangsan'.replace('http','ws'))
+                socket.onopen = function() {
+                    $('#content').append('开始连接... \r\n')
+                }
+                socket.onmessage = function(msg) {
+                    $('#content').append(msg.data + ' \r\n')
+                }
+                socket.onclose = function() {
+                    $('#content').append('连接关闭 \r\n')
+                }
+                socket.onerror = function() {
+                    $('#content').append('连接出现问题 \r\n')
+                }
+            }
+        }
+        function pushMessage() {
+            $.post('http://localhost:8080/socket/pushMessage?sic=zhangsan&message=' + (new Date()).getTime())
+        }
+    </script>
+</body>
+</html>
